@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+spec:
+  selector:
+    matchLabels:
+      app: grafana
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: grafana
+          image: grafana/grafana:10.0.4
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+              name: grafana
+          resources: {}
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              value: rim
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              value: rimrim123
+            - name: GF_INSTALL_PLUGINS
+              value: grafana-piechart-panel,camptocamp-prometheus-alertmanager-datasource,grafana-clock-panel
+          volumeMounts:
+            - name: datasource
+              mountPath: /etc/grafana/provisioning/datasources
+      volumes:
+        - name: datasource
+          configMap:
+            name: grafana-datasource
